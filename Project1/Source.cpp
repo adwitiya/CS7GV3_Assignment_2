@@ -21,11 +21,11 @@ unsigned int loadTexture(const char *path);
 unsigned int loadCubemap(vector<std::string> faces);
 
 // settings
-const unsigned int SCR_WIDTH = 1024;
-const unsigned int SCR_HEIGHT = 768;
+const unsigned int SCR_WIDTH = 1280;
+const unsigned int SCR_HEIGHT = 720;
 
 // camera
-Camera camera(glm::vec3(0.0f, 2.0f, 10.0f));
+Camera camera(glm::vec3(0.0f, 2.0f, 15.0f));
 float lastX = (float)SCR_WIDTH / 2.0;
 float lastY = (float)SCR_HEIGHT / 2.0;
 bool firstMouse = true;
@@ -198,12 +198,12 @@ int main()
 	// -------------
 	vector<std::string> faces
 	{
-		FileSystem::getPath("skybox/sky/right.jpg"),
-		FileSystem::getPath("skybox/sky/left.jpg"),
-		FileSystem::getPath("skybox/sky/top.jpg"),
-		FileSystem::getPath("skybox/sky/bottom.jpg"),
-		FileSystem::getPath("skybox/sky/front.jpg"),
-		FileSystem::getPath("skybox/sky/back.jpg"),
+		FileSystem::getPath("skybox/midnight/right.tga"),
+		FileSystem::getPath("skybox/midnight/left.tga"),
+		FileSystem::getPath("skybox/midnight/top.jpg"),
+		FileSystem::getPath("skybox/midnight/bottom.tga"),
+		FileSystem::getPath("skybox/midnight/front.tga"),
+		FileSystem::getPath("skybox/midnight/back.tga"),
 	};
 	unsigned int cubemapTexture = loadCubemap(faces);
 
@@ -215,8 +215,8 @@ int main()
 	skyboxShader.use();
 	skyboxShader.setInt("skybox", 0);
 
-	Model ourModel(FileSystem::getPath("models/teapot.obj"));
-
+	Model ourModel(FileSystem::getPath("models/Diamond.obj"));
+	Model ourTeapot(FileSystem::getPath("models/Teapot.obj"));
 	// render loop
 	// -----------
 	while (!glfwWindowShouldClose(window))
@@ -242,11 +242,19 @@ int main()
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
 		shader.setMat4("model", model);
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 		shader.setVec3("cameraPos", camera.Position);
 		ourModel.Draw(shader);
+
+		shader.use();
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(0.5f, 3.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(10.0f, 10.0f, 10.0f));
+		shader.setMat4("model", model);
+		ourTeapot.Draw(shader);
 
 		// cubes
 		//glBindVertexArray(cubeVAO);
