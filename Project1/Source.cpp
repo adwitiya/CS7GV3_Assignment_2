@@ -21,11 +21,11 @@ unsigned int loadTexture(const char *path);
 unsigned int loadCubemap(vector<std::string> faces);
 
 // settings
-const unsigned int SCR_WIDTH = 1280;
-const unsigned int SCR_HEIGHT = 720;
+const unsigned int SCR_WIDTH = 1920;
+const unsigned int SCR_HEIGHT = 1080;
 
 // camera
-Camera camera(glm::vec3(0.0f, 2.0f, 15.0f));
+Camera camera(glm::vec3(7.0f, 2.0f, 45.0f));
 float lastX = (float)SCR_WIDTH / 2.0;
 float lastY = (float)SCR_HEIGHT / 2.0;
 bool firstMouse = true;
@@ -79,54 +79,13 @@ int main()
 	// build and compile shaders
 	// -------------------------
 	Shader shader("../shaders/cubemaps.vs", "../shaders/cubemaps.fs");
+	Shader shader2("../shaders/cubemaps2.vs", "../shaders/cubemaps2.fs");
+	Shader shader4("../shaders/cubemaps3.vs", "../shaders/cubemaps3.fs");
+	Shader shader3("../shaders/cubemaps.vs", "../shaders/cubemaps.fs");
 	Shader skyboxShader("../shaders/skybox.vs", "../shaders/skybox.fs");
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
-	float cubeVertices[] = {
-		// positions          // normals
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-		0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-		0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-		0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-		0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-		0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-		0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-		0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-	};
 	float skyboxVertices[] = {
 		// positions          
 		-1.0f,  1.0f, -1.0f,
@@ -172,18 +131,7 @@ int main()
 		1.0f, -1.0f,  1.0f
 	};
 
-	// cube VAO
 
-	unsigned int cubeVAO, cubeVBO;
-	glGenVertexArrays(1, &cubeVAO);
-	glGenBuffers(1, &cubeVBO);
-	glBindVertexArray(cubeVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 	// skybox VAO
 	unsigned int skyboxVAO, skyboxVBO;
 	glGenVertexArrays(1, &skyboxVAO);
@@ -212,10 +160,20 @@ int main()
 	shader.use();
 	shader.setInt("skybox", 0);
 
+	shader2.use();
+	shader2.setInt("skybox", 0);
+
+	shader3.use();
+	shader3.setInt("skybox", 0);
+
+	shader4.use();
+	shader4.setInt("skybox", 0);
+
 	skyboxShader.use();
 	skyboxShader.setInt("skybox", 0);
 
 	Model ourModel(FileSystem::getPath("models/Diamond.obj"));
+	Model ourModel2(FileSystem::getPath("models/Diamond.obj"));
 	Model ourTeapot(FileSystem::getPath("models/Teapot.obj"));
 	// render loop
 	// -----------
@@ -241,20 +199,58 @@ int main()
 		glm::mat4 model;
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
-		shader.setMat4("model", model);
+		
+		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
+		shader.setMat4("model",model);
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 		shader.setVec3("cameraPos", camera.Position);
-		ourModel.Draw(shader);
-
-		shader.use();
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-		model = glm::translate(model, glm::vec3(0.5f, 3.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(10.0f, 10.0f, 10.0f));
-		shader.setMat4("model", model);
 		ourTeapot.Draw(shader);
+
+		shader4.use();
+		glm::mat4 model_3;
+		glm::mat4 view_3 = camera.GetViewMatrix();
+		glm::mat4 projection_3 = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		model_3 = glm::translate(model_3, glm::vec3(20.0f, 0.0f, 0.0f));
+		model_3 = glm::scale(model_3, glm::vec3(1.0f, 1.0f, 1.0f));
+		//model_3 = glm::rotate(model_3, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 global_3 = model * model_3;
+		shader4.setMat4("model", global_3);
+		shader4.setMat4("view", view_3);
+		shader4.setMat4("projection", projection_3);
+		shader4.setVec3("cameraPos", camera.Position);
+		ourTeapot.Draw(shader4);
+		
+
+		shader3.use();
+		glm::mat4 model_1;
+		glm::mat4 view_1 = camera.GetViewMatrix();
+		glm::mat4 projection_1 = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		model_1 = glm::translate(model_1, glm::vec3(-10.0f, 1.0f, 0.0f));
+		model_1 = glm::scale(model_1, glm::vec3(0.03f, 0.03f, 0.03f));
+		model_1 = glm::rotate(model_1, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 global_1 = model * model_1;
+		shader3.setMat4("model", global_1);
+		shader3.setMat4("view", view_1);
+		shader3.setMat4("projection", projection_1);
+		shader3.setVec3("cameraPos", camera.Position);
+		ourModel.Draw(shader3);
+
+		shader2.use();
+		glm::mat4 model_2;
+		glm::mat4 view_2 = camera.GetViewMatrix();
+		glm::mat4 projection_2 = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		model_2 = glm::translate(model_2, glm::vec3(10.0f, 1.0f, 0.0f));
+		model_2 = glm::scale(model_2, glm::vec3(0.03f,0.03f, 0.03f));
+		model_2 = glm::rotate(model_2, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 global_2 = model * model_2;
+		shader2.setMat4("model", global_2);
+		shader2.setMat4("view", view);
+		shader2.setMat4("projection", projection);
+		shader2.setVec3("cameraPos", camera.Position);
+		ourModel2.Draw(shader2);
+
+
 
 
 		// draw skybox as last
@@ -279,9 +275,7 @@ int main()
 
 	// optional: de-allocate all resources once they've outlived their purpose:
 	// ------------------------------------------------------------------------
-	glDeleteVertexArrays(1, &cubeVAO);
 	glDeleteVertexArrays(1, &skyboxVAO);
-	glDeleteBuffers(1, &cubeVBO);
 	glDeleteBuffers(1, &skyboxVAO);
 
 	glfwTerminate();
